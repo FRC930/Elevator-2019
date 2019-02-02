@@ -36,35 +36,44 @@ public class Robot extends TimedRobot {
      public static double LevelOneCargo;
      public static double LevelTwoCargo;
      public static double LevelThreeCargo;
-     public static double LevelOneHatch;
+     public static double LevelOneHatch_PlayerStation;
      public static double LevelTwoHatch;
      public static double LevelThreeHatch;
      public static double CargoShipCargo;
-     public static double PlayerStation;
+     public static double ElevatorReset;
 
      public static Joystick stick = new Joystick(0);
      public static double TargetPosition;
     @Override
    public void robotInit(){
+    //lift2 motor follows lift1
     lift2.follow(lift1);
+    //talon gets info from encoder
     lift1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-   
+   //sets limit of where it should go
     lift1.configForwardSoftLimitThreshold(8300, 10);
     lift1.configReverseSoftLimitThreshold(10, 10);
-    
+    //sets up the  fpid for pid functions
+    lift1.selectProfileSlot(0, 0);
     lift1.config_kF(0, 0, 10);
-		lift1.config_kP(0, 2.0, 10);
+		lift1.config_kP(0, 0.1, 10);
 		lift1.config_kI(0, 0, 10);
     lift1.config_kD(0, 0, 10);
-   
+    //CruiseVelocity is the no exceleration part of trapizoid / top Acceleration is getting to top
     lift1.configMotionCruiseVelocity(1200, 10);
     lift1.configMotionAcceleration(1500, 10);
-    
+    //Nominal out put is lowest limit and peak is highest    lift1.configNominalOutputForward(0, 10);
+    lift1.configNominalOutputReverse(0, 10);
     lift1.configNominalOutputForward(0, 10);
-		lift1.configNominalOutputReverse(0, 10);
 		lift1.configPeakOutputForward(1, 10);
-		lift1.configPeakOutputReverse(-1, 10);
-   }
+    lift1.configPeakOutputReverse(-1, 10);
+    //sets the sensor to the bootom/0
+    lift1.setSelectedSensorPosition(0, 0, 10);
+    
+    lift1.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 10);
+		lift1.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 10);
+    TargetPosition = 0;
+  }
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for
@@ -107,34 +116,33 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //Rocket level 1 cargo
+    //Rocket level 1 cargo/button1 A
     if (stick.getRawButton(1) == true){
       TargetPosition = LevelOneCargo;
-
     }
 
 
-    //Rocket level 2 cargo
+    //Rocket level 2 cargo/button2 B
     else if (stick.getRawButton(2) == true){
       TargetPosition = LevelTwoCargo;
 
 
     }
 
-    //Rocket level 3 cargo
+    //Rocket level 3 cargo/button3 X
     else if (stick.getRawButton(3) == true){
       TargetPosition = LevelThreeCargo;
 
     }
 
-    //Rocket level 1 hatch
+    //Rocket level 1 hatch/button4 Y
     else if (stick.getRawButton(4) == true){
-      TargetPosition = LevelOneHatch;
+      TargetPosition = LevelOneHatch_PlayerStation;
 
 
     }
 
-    //Rocket level 2 hatch
+    //Rocket level 2 hatch/Dpad Up
     else if (stick.getPOV() == 0){
       TargetPosition = LevelTwoHatch;
 
@@ -142,23 +150,21 @@ public class Robot extends TimedRobot {
 
     }
 
-    //Rocket level 3 hatch
+    //Rocket level 3 hatch/Dpad Right
     else if (stick.getPOV() == 90){
       TargetPosition = LevelThreeHatch;
 
     }
-    // Player Station Stuff
+    // Cargo Ship Cargo/Dpad Down
     else if (stick.getPOV() == 180){
-      TargetPosition = PlayerStation;
-
-
-    }
-    //Cargo Ship Cargo
-    else if(stick.getPOV() == 270) {
       TargetPosition = CargoShipCargo;
 
 
     }
+    //Cargo Ship Cargo/Dpad Left
+    else if(stick.getPOV() == 270) {
+      TargetPosition = ElevatorReset;
+   }
     lift1.set(ControlMode.MotionMagic, TargetPosition);
   }
 
