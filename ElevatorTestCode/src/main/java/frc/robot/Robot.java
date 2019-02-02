@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.tools.classfile.TypeAnnotation.Position;
+import com.sun.tools.javac.jvm.Target;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
@@ -43,19 +43,27 @@ public class Robot extends TimedRobot {
      public static double PlayerStation;
 
      public static Joystick stick = new Joystick(0);
-     private static double TargetPostition;
+     public static double TargetPosition;
     @Override
    public void robotInit(){
     lift2.follow(lift1);
     lift1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+   
     lift1.configForwardSoftLimitThreshold(8300, 10);
     lift1.configReverseSoftLimitThreshold(10, 10);
+    
     lift1.config_kF(0, 0, 10);
 		lift1.config_kP(0, 2.0, 10);
 		lift1.config_kI(0, 0, 10);
     lift1.config_kD(0, 0, 10);
+   
     lift1.configMotionCruiseVelocity(1200, 10);
-		lift1.configMotionAcceleration(1500, 10);
+    lift1.configMotionAcceleration(1500, 10);
+    
+    lift1.configNominalOutputForward(0, 10);
+		lift1.configNominalOutputReverse(0, 10);
+		lift1.configPeakOutputForward(1, 10);
+		lift1.configPeakOutputReverse(-1, 10);
    }
 
   /**
@@ -101,54 +109,57 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     //Rocket level 1 cargo
     if (stick.getRawButton(1) == true){
-      TargetPostition = LevelOneCargo;
+      TargetPosition = LevelOneCargo;
 
     }
 
 
     //Rocket level 2 cargo
     else if (stick.getRawButton(2) == true){
-      TargetPostition = LevelTwoCargo;
+      TargetPosition = LevelTwoCargo;
 
 
     }
 
     //Rocket level 3 cargo
     else if (stick.getRawButton(3) == true){
-      TargetPostition = LevelThreeCargo;
+      TargetPosition = LevelThreeCargo;
 
     }
 
     //Rocket level 1 hatch
     else if (stick.getRawButton(4) == true){
-      TargetPostition = LevelOneHatch;
+      TargetPosition = LevelOneHatch;
 
 
     }
 
     //Rocket level 2 hatch
     else if (stick.getPOV() == 0){
-      TargetPostition = LevelTwoHatch;
+      TargetPosition = LevelTwoHatch;
+
+     
 
     }
 
     //Rocket level 3 hatch
     else if (stick.getPOV() == 90){
-      TargetPostition = LevelThreeHatch;
+      TargetPosition = LevelThreeHatch;
 
     }
     // Player Station Stuff
     else if (stick.getPOV() == 180){
-      TargetPostition = PlayerStation;
+      TargetPosition = PlayerStation;
 
 
     }
     //Cargo Ship Cargo
     else if(stick.getPOV() == 270) {
-      TargetPostition = CargoShipCargo;
+      TargetPosition = CargoShipCargo;
 
 
     }
+    lift1.set(ControlMode.MotionMagic, TargetPosition);
   }
 
 
