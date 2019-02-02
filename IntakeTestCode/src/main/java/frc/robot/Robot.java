@@ -3,13 +3,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Solenoid;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
  
-  Solenoid piston = new Solenoid(0);
-  TalonSRX motor = new TalonSRX(0);
+  private final static Solenoid piston = new Solenoid(0);
   Joystick stick = new Joystick(0);
 
   @Override
