@@ -80,8 +80,8 @@ public class Robot extends TimedRobot {
 
     handPiston.set(handActivity);
       /*
-      When handActivity = false, piston retracts, pushing the arm out.
-      When handActivity = true, piston extends, pulling the arm in.
+      When handActivity = false, piston retracts, letting the hand hang.
+      When handActivity = true, piston extends, holding the hand up.
       */
 
   }
