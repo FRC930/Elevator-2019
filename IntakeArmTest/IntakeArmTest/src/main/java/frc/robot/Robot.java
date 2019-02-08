@@ -70,7 +70,8 @@ public class Robot extends TimedRobot {
     {
       armStatus = true;
       /*
-      If LB is pressed and the button control is false, set button control true.
+      If LB is pressed and the button control is false, 
+      set button control true.
       */
     }
     if(CoDriverController.getRawButton(5) == false && armStatus == true)
@@ -78,7 +79,8 @@ public class Robot extends TimedRobot {
       armStatus = false;
       armActivity = !armActivity;
       /*
-      If LB is pressed and the button control is true, set button control false and set armActivity opposite to itself.
+      If LB is pressed and the button control is true, 
+      set button control false and set armActivity opposite to itself.
       */
     }
 
