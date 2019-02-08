@@ -49,20 +49,22 @@ public class Robot extends TimedRobot {
     //Variable for the  RT LT pressing
     public static boolean RtPressed;
     public static boolean LtPressed;
-    //Use CoDriver controller
+    //Use CoDriver controller sets up a controller called stick
     public static Joystick stick = new Joystick(1);
     //Creates a target variable
     public static double TargetPosition;
-    //kTimeout variable to act as constants
+    //kTimeout variable for a value used often
     public static int kTimeoutMs;
     //Variable to set actual position
     public static double ActualPosition;
-    //check to see if the buttons are ready 
+    //Variable to check to see if the buttons are ready 
     public static boolean Lcheck;
     public static boolean Rcheck;
-    //check to see if you can shoot
+    //Variable to check to see if you can shoot
     public static boolean CanShoot;
-
+    //Variable to get the axisY positon on the controller
+    public static double AxisY;
+    
     private static ElevatorStates stateEnum;
 
     @Override
@@ -106,14 +108,28 @@ public class Robot extends TimedRobot {
 		lift1.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
     
     TargetPosition = 0;
-    //sets booleans to false
+    //setting booleans to false
     Lcheck = false;
     Rcheck = false;
     RtPressed = false;
     LtPressed = false;
     CanShoot = false;
+    
+    //setting levels for diffrent game pieces
+    LevelOneCargo = 0;
+    LevelOneHatch_PlayerStation = 0;
+    LevelTwoCargo = 0;
+    LevelTwoHatch= 0;
+    LevelThreeCargo = 0;
+    LevelThreeHatch = 0;
+    CargoShipCargo = 0;
     ElevatorReset = 0;
+    //sets actual position
     ActualPosition = lift1.getSelectedSensorPosition(0);
+    //sets the value of axisY to the joystick value
+    AxisY = stick.getRawAxis(1);
+    
+
   }
 
   /**
@@ -157,6 +173,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    if( Math.abs(AxisY) > 0.01){
+      RunManual(AxisY);
+
+    }
     //Button RT test to see if pressed and released
     if(stick.getRawAxis(3) >= 0.5 && RtPressed == false){
       RtPressed = true;
@@ -223,9 +243,6 @@ public class Robot extends TimedRobot {
      if(stick.getRawButton(10) == true) {
       setTargetPos(ElevatorStates.ResetElevator);
    }
-    lift1.set(ControlMode.MotionMagic, TargetPosition);
-    
-    
   }
   /**
    * This function is called periodically during test mode.
@@ -236,13 +253,14 @@ public class Robot extends TimedRobot {
 
 
   public static boolean AtPosition() {
-    if(ActualPosition >= (TargetPosition-10) && ActualPosition <= (TargetPosition+10)){
+    if(ActualPosition > (TargetPosition-10) && ActualPosition < (TargetPosition+10)){
       CanShoot = true;
     }
     else{
       CanShoot = false;
     }
   }
+  //Making enums for elevator
   enum ElevatorStates {
       RocketLevelOneCargo,
       RocketLevelTwoCargo,
@@ -255,7 +273,7 @@ public class Robot extends TimedRobot {
 
   public static void setTargetPos(Enum pos1) {
     stateEnum = (ElevatorStates) pos1;
-    
+    //making a switch case
     switch(stateEnum){
 
       case RocketLevelOneCargo:
@@ -279,10 +297,30 @@ public class Robot extends TimedRobot {
       case ResetElevator:
         TargetPosition = ElevatorReset;
         break;
+      lift1.set(ControlMode.MotionMagic, TargetPosition);
     
     }
 
 
+    }
+  public static void RunManual(double AxisY){
+    AxisY = Math.pow(AxisY,3);
+    TargetPosition += (AxisY * -400);
+    
+    if(TargetPosition > LevelThreeHatch ){
+			TargetPosition = LevelThreeHatch;
+    }
+     else if (TargetPosition < ElevatorReset){
+			TargetPosition = ElevatorReset;
+		}
+
+  }
+  public static boolean CheckEncoder(){ 
+    if(ActualPosition == 0 && TargetPosition != ElevatorReset){
+      return false;
+    }
+    else{
+      return true;
     }
   }
 }
