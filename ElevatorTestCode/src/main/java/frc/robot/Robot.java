@@ -34,34 +34,46 @@ public class Robot extends TimedRobot {
     //Sets up the  talons
     public static TalonSRX lift1 = new TalonSRX(1);
     public static TalonSRX lift2 = new TalonSRX(2);
+    
     //Cargo level variable
     public static double LevelOneCargo;
     public static double LevelTwoCargo;
     public static double LevelThreeCargo;
+    
     //Hatch levels variables 
     public static double LevelOneHatch_PlayerStation;
     public static double LevelTwoHatch;
     public static double LevelThreeHatch;
+    
     //Cargo ship level variable
     public static double CargoShipCargo;
+    
     //Resets the elevator variable
     public static double ElevatorReset;
+    
     //Variable for the  RT LT pressing
     public static boolean RtPressed;
     public static boolean LtPressed;
+    
     //Use CoDriver controller sets up a controller called stick
     public static Joystick stick = new Joystick(1);
+    
     //Creates a target variable
     public static double TargetPosition;
+    
     //kTimeout variable for a value used often
     public static int kTimeoutMs;
+    
     //Variable to set actual position
     public static double ActualPosition;
+    
     //Variable to check to see if the buttons are ready 
     public static boolean Lcheck;
     public static boolean Rcheck;
+    
     //Variable to check to see if you can shoot
     public static boolean CanShoot;
+    
     //Variable to get the axisY positon on the controller
     public static double AxisY;
     
@@ -124,8 +136,10 @@ public class Robot extends TimedRobot {
     LevelThreeHatch = 0;
     CargoShipCargo = 0;
     ElevatorReset = 0;
+    
     //sets actual position
     ActualPosition = lift1.getSelectedSensorPosition(0);
+    
     //sets the value of axisY to the joystick value
     AxisY = stick.getRawAxis(1);
     
@@ -187,7 +201,8 @@ public class Robot extends TimedRobot {
       Lcheck = false;
       Rcheck = !Rcheck;
     }
-    //Button LT test to see if pressed and released
+
+    //Button LT test to see if pressed and released 
     if(stick.getRawAxis(2) >= 0.5 && LtPressed == false){
       LtPressed = true;
     }
@@ -197,25 +212,27 @@ public class Robot extends TimedRobot {
       Rcheck = false;
       Lcheck = !Lcheck;
     }
+
     //check to see if it has been pressed the first time(true) or pressed a second time(false)
     if(Rcheck){
-      //Rocket level 1 cargo/button1 A
+      
+      //sends the enum rocklevelonecargo to the setTargetPos method when button 1(A) is pressed
       if (stick.getRawButton(1) == true){
         setTargetPos(ElevatorStates.RocketLevelOneCargo);
       }
 
 
-      //Rocket level 2 cargo/button2 B
+      //sends the enum rockleveltwocargo to the setTargetPos method when button 2(B) is pressed
       else if (stick.getRawButton(2) == true){
         setTargetPos(ElevatorStates.RocketLevelTwoCargo);
       }
 
-      //Rocket level 3 cargo/button3 X
+      //sends the enum rocketlevelthreecargo to the setTargetPos method when button 3(X) is  pressed
       else if (stick.getRawButton(3) == true){
         setTargetPos(ElevatorStates.RocketLevelThreeCargo);
       }
 
-      // Cargo Ship Cargo/button4 Y
+      //sends the enum rocklevelonehatch and player station to the setTargetPos method when button 4(Y) is pressed
       else if (stick.getRawButton(4) == true){
         setTargetPos(ElevatorStates.RocketLevelOneHatchAndPlayerStation);
       }
@@ -223,23 +240,24 @@ public class Robot extends TimedRobot {
     
     //check to see if it has been pressed the first time(true) or pressed a second time(false)
     else if(Lcheck){
-      //Rocket level 1 hatch/button1 A
+      
+      //sends the enum rocklevelonehatch to the setTargetPos method when button 1(A) is pressed
        if (stick.getRawButton(1) == true){
         setTargetPos(ElevatorStates.RocketLevelOneHatchAndPlayerStation);
       }
 
-      //Rocket level 2 hatch/button2 B
+      //sends the enum rockleveltwohatch to the setTargetPos method when button 2(B) is pressed
       else if (stick.getRawButton(2) == true){
         setTargetPos(ElevatorStates.RocketLevelTwoHatch);
       }
 
-      //Rocket level 3 hatch/button3 X
+      //sends the enum rocklevelthreehatch to the setTargetPos method whem button 3(X) is pressed
       else if (stick.getRawButton(3) == true){
         setTargetPos(ElevatorStates.RocketLevelThreeHatch);
       }
     }
    
-    //reset elevator/Down on right stick
+    //sends the enum ResetElevator to the setTargetPos method when the right stick is pressed down
      if(stick.getRawButton(10) == true) {
       setTargetPos(ElevatorStates.ResetElevator);
    }
@@ -251,15 +269,16 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
-
+  //makes sure the it is at the right position
   public static boolean AtPosition() {
     if(ActualPosition > (TargetPosition-10) && ActualPosition < (TargetPosition+10)){
-      CanShoot = true;
+      return true;
     }
     else{
-      CanShoot = false;
+      return false;
     }
   }
+
   //Making enums for elevator
   enum ElevatorStates {
       RocketLevelOneCargo,
@@ -271,9 +290,11 @@ public class Robot extends TimedRobot {
       ResetElevator
   }
 
+  //setting target position
   public static void setTargetPos(Enum pos1) {
     stateEnum = (ElevatorStates) pos1;
-    //making a switch case
+
+    //makes a swithc case to go to position
     switch(stateEnum){
 
       case RocketLevelOneCargo:
@@ -303,7 +324,9 @@ public class Robot extends TimedRobot {
 
 
     }
-  public static void RunManual(double AxisY){
+
+    //runs manual motion magic
+    public static void RunManual(double AxisY){
     AxisY = Math.pow(AxisY,3);
     TargetPosition += (AxisY * -400);
     
@@ -315,6 +338,8 @@ public class Robot extends TimedRobot {
 		}
 
   }
+
+  //checks to make sure the  encoder is working
   public static boolean CheckEncoder(){ 
     if(ActualPosition == 0 && TargetPosition != ElevatorReset){
       return false;
