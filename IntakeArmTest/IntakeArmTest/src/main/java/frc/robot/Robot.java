@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
 //===== Variables =====||
 
   public static Joystick CoDriverController = new Joystick(1); //Declaring to codriver and calling the controller.
+    public static int Button_Left_Bumper = 5; //Left bumper button on controller.
   public static boolean armStatus = true; //Button control.
   public final static Solenoid armPiston = new Solenoid(0); //Declaring the arm piston.
   public static boolean armActivity = true; //Arm piston control.
@@ -66,7 +67,7 @@ public class Robot extends TimedRobot {
     
 //===== Button Press Statement =====||
 
-    if(CoDriverController.getRawButton(5) == true && armStatus == false)
+    if(CoDriverController.getRawButton(Button_Left_Bumper) == true && armStatus == false)
     {
       armStatus = true;
       /*
@@ -74,7 +75,7 @@ public class Robot extends TimedRobot {
       set button control true.
       */
     }
-    if(CoDriverController.getRawButton(5) == false && armStatus == true)
+    if(CoDriverController.getRawButton(Button_Left_Bumper) == false && armStatus == true)
     {
       armStatus = false;
       armActivity = !armActivity;
