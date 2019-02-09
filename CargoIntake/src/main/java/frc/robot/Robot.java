@@ -41,12 +41,12 @@ public class Robot extends TimedRobot {
 //===== Variables =====||
 
   public static Joystick stick = new Joystick(1); //Codriver.
-  public static TalonSRX IntakeCargo = new TalonSRX(1);
-  public final static Solenoid handPiston = new Solenoid(1);
+  public final static Solenoid handPiston = new Solenoid(1); //Hand control.
+  public static TalonSRX IntakeCargo = new TalonSRX(1); //Wheel control.
   public static boolean handActivity = false; //Hand piston control.
-  public static double intakeSpeed = 1;
-  public static double outtakeSpeed = -1;
-  public static double cargoStop = 0;
+  public static double intakeSpeed = 1; //Wheel speed during intake.
+  public static double outtakeSpeed = -1; //Wheel speed during outtake.
+  public static double cargoStop = 0; //Reset of wheel speed.
 
   @Override
   public void robotInit() {
