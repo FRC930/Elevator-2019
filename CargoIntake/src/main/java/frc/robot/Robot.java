@@ -25,10 +25,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Counter.Mode;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Solenoid;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -37,13 +33,15 @@ public class Robot extends TimedRobot {
 
 //===== Variables =====||
 
-  public static Joystick stick = new Joystick(1); //Codriver.
-  public final static Solenoid handPiston = new Solenoid(1); //Hand control.
+  public static Joystick stick = new Joystick(1); //Codriver's controller.
+    public static int Button_A = 1; //Button A on controller.
+    public static int Button_B = 2; //Button B on controller.
+  public final static Solenoid handPiston = new Solenoid(1); //Hand piston control.
+    public static boolean handActivity = false; //Hand piston control.
   public static TalonSRX IntakeCargo = new TalonSRX(1); //Wheel control.
-  public static boolean handActivity = false; //Hand piston control.
-  public static double intakeSpeed = 1; //Wheel speed during intake.
-  public static double outtakeSpeed = -1; //Wheel speed during outtake.
-  public static double cargoStop = 0; //Reset of wheel speed.
+    public static double intakeSpeed = 1; //Wheel speed during intake.
+    public static double outtakeSpeed = -1; //Wheel speed during outtake.
+    public static double stopSpeed = 0; //Reset of wheel speed.
 
   @Override
   public void robotInit() {
@@ -71,20 +69,20 @@ public class Robot extends TimedRobot {
 
 //===== Intake & Outtake =====||
 
-    if(stick.getRawButton(1) == true) //Intake
+    if(stick.getRawButton(Button_A) == true) //Motor control sets speed for inttake. Hand is out.
     {
       IntakeCargo.set(ControlMode.PercentOutput, intakeSpeed);
-      handActivity = true;
+      handActivity = false;
     }
-    else if(stick.getRawButton(2) == true) //Outtake
+    else if(stick.getRawButton(Button_B) == true) //Motor control sets speed for outtake. Hand is out.
     {
       IntakeCargo.set(ControlMode.PercentOutput, outtakeSpeed);
-      handActivity = true;
-    }
-    else //Reset
-    {
-      IntakeCargo.set(ControlMode.PercentOutput, cargoStop);
       handActivity = false;
+    }
+    else //Motor control sets speed to stop. Hand is held up.
+    {
+      IntakeCargo.set(ControlMode.PercentOutput, stopSpeed);
+      handActivity = true;
     }
 
 //===== Piston Control =====||
