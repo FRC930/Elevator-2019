@@ -5,9 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+/*
+
+//===== OVERALL EXPLANATION =====||
+
+GOAL(S):
+  Hand is up on start.
+  One button is used for intake and another for outtake of cargo.
+
+BUTTON(S) USED:
+  Button 1: A
+  Button 2: B
+
+*/
 
 //===== Imports =====||
+
+package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
