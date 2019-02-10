@@ -1,4 +1,4 @@
-2w3r/*----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 /* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
@@ -10,7 +10,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.tools.javac.jvm.Target;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
@@ -57,7 +56,7 @@ public class Robot extends TimedRobot {
     public static boolean LtPressed;
     
     //Use CoDriver controller sets up a controller called stick
-    public static Joystick stick = new Joystick(1);
+    public static Joystick stick = new Joystick(0);
     
     //Creates a target variable
     public static double TargetPosition;
@@ -80,10 +79,23 @@ public class Robot extends TimedRobot {
     
     private static ElevatorStates stateEnum;
 
-    private static double leftYstick;
+    private static double F = 1.4614;
+    private static double P = 20.0;
+    private static double I = 0.070;
+    private static double D = 51.0;
+    private static int Velocity = 650;
+    private static int Acceleration = 1200;
+    private static int pidSlotNumber = 0;
     @Override
    public void robotInit(){
-
+    
+    SmartDashboard.putNumber("F", F);
+    SmartDashboard.putNumber("P", P);
+    SmartDashboard.putNumber("I", I);
+    SmartDashboard.putNumber("D", D);
+    SmartDashboard.putNumber("Velocity", Velocity);
+    SmartDashboard.putNumber("Acceleration", Acceleration);
+    
 
     
     kTimeoutMs = 10;
@@ -96,28 +108,30 @@ public class Robot extends TimedRobot {
     lift1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, kTimeoutMs);
     
     //sets limit of where it should go
-    lift1.configForwardSoftLimitThreshold(-5900, kTimeoutMs);
-    lift1.configReverseSoftLimitThreshold(10, kTimeoutMs);
+    lift1.configForwardSoftLimitThreshold(-5500, kTimeoutMs);
+    lift1.configReverseSoftLimitThreshold(-50, kTimeoutMs);
     
     //sets up the  fpid for pid functions
-    lift1.selectProfileSlot(0, 0);
-    lift1.config_kF(0, 0, kTimeoutMs);
-		lift1.config_kP(0, 0, kTimeoutMs);
-		lift1.config_kI(0, 0, kTimeoutMs);
-    lift1.config_kD(0, 0, kTimeoutMs);
+    lift1.selectProfileSlot(pidSlotNumber, 0);
+    lift1.config_kF(pidSlotNumber, F, kTimeoutMs);
+		lift1.config_kP(pidSlotNumber, P, kTimeoutMs);
+    lift1.config_kI(pidSlotNumber, I, kTimeoutMs);
+    lift1.config_kD(pidSlotNumber, D, kTimeoutMs);
     
     //CruiseVelocity is the no exceleration part of trapizoid / top Acceleration is getting to top
-    lift1.configMotionCruiseVelocity(1000, 10);
-    lift1.configMotionAcceleration(1300, 10);
+    lift1.configMotionCruiseVelocity(Velocity, kTimeoutMs);
+    lift1.configMotionAcceleration(Acceleration, kTimeoutMs);
     
-    //Nominal out put is lowest limit and peak is highest    lift1.configNominalOutputForward(0, 10);
+    lift1.setSensorPhase(true);
+
+    //Nominal out put is lowest limit and peak is highest    
     lift1.configNominalOutputReverse(0, kTimeoutMs);
     lift1.configNominalOutputForward(0, kTimeoutMs);
 		lift1.configPeakOutputForward(1, kTimeoutMs);
     lift1.configPeakOutputReverse(-1, kTimeoutMs);
     
     //sets the sensor to the bootom/0
-    lift1.setSelectedSensorPosition(0, 0, kTimeoutMs);
+    //lift1.setSelectedSensorPosition(0, 0, kTimeoutMs);
     
     lift1.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
 		lift1.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
@@ -190,13 +204,50 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    leftYstick = stick.getRawAxis(1);
-    double leftYstick = -1.0 * stick.getRawAxis(1);
-		if (Math.abs(leftYstick) < 0.10) { leftYstick = 0;}
-    if(stick.getRawButton(1)){
-      TargetPosition = leftYstick* 4096 * 10.0;
+
+    double leftYstick = stick.getRawAxis(1);
+    leftYstick = Math.pow(leftYstick,3);
+		if (Math.abs(leftYstick) < 0.005) { 
+      leftYstick = 0;
+    }
+
+    if(leftYstick > 0.005 && stick.getRawButton(1)){
+      TargetPosition = (leftYstick * -2000) + 2500 ;
       lift1.set(ControlMode.MotionMagic, TargetPosition);
     }
+    else if(stick.getRawButton(3)){
+      TargetPosition = 500;
+      lift1.set(ControlMode.MotionMagic, TargetPosition);
+    }
+    else if(stick.getRawButton(2)){
+      TargetPosition = 4500;
+      lift1.set(ControlMode.MotionMagic, TargetPosition);
+    }
+    else if(stick.getRawButton(4)){
+      TargetPosition = 2500;
+      lift1.set(ControlMode.MotionMagic, TargetPosition);
+    }
+    else{
+      lift1.set(ControlMode.PercentOutput, -leftYstick);
+    }
+    /*
+    if(stick.getRawButton(8)){
+      F = SmartDashboard.getNumber("F", F);
+      P = SmartDashboard.getNumber("P", P);
+      I = SmartDashboard.getNumber("I", I);
+      D = SmartDashboard.getNumber("D", D);
+      Velocity = (int)SmartDashboard.getNumber("Velocity", Velocity);
+      Acceleration = (int)SmartDashboard.getNumber("Acceleration", Acceleration);
+
+    }
+    */
+    SmartDashboard.putNumber("EncoderPosition", lift1.getSelectedSensorPosition());
+    SmartDashboard.putNumber("CalcError", lift1.getSelectedSensorPosition() - TargetPosition);
+    SmartDashboard.putNumber("Joystick", -leftYstick);
+    SmartDashboard.putNumber("TargetPosition", TargetPosition);
+    SmartDashboard.putNumber("TalonError", lift1.getClosedLoopError());
+    
+
     /*
     if( Math.abs(AxisY) > 0.01){
       RunManual(AxisY);
@@ -330,7 +381,7 @@ public class Robot extends TimedRobot {
       case ResetElevator:
         TargetPosition = ElevatorReset;
         break;
-      lift1.set(ControlMode.MotionMagic, TargetPosition);
+      //lift1.set(ControlMode.MotionMagic, TargetPosition);
     
     }
 
