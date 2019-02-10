@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*/
+2w3r/*----------------------------------------------------------------------------*/
 /* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
@@ -34,6 +34,7 @@ public class Robot extends TimedRobot {
     //Sets up the  talons
     public static TalonSRX lift1 = new TalonSRX(1);
     public static TalonSRX lift2 = new TalonSRX(2);
+    public static TalonSRX lift3 = new TalonSRX(3);
     
     //Cargo level variable
     public static double LevelOneCargo;
@@ -79,6 +80,7 @@ public class Robot extends TimedRobot {
     
     private static ElevatorStates stateEnum;
 
+    private static double leftYstick;
     @Override
    public void robotInit(){
 
@@ -88,24 +90,25 @@ public class Robot extends TimedRobot {
     
     //lift2 motor follows lift1
     lift2.follow(lift1);
+    lift3.follow(lift1);
     
     //talon gets info from encoder
     lift1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, kTimeoutMs);
     
     //sets limit of where it should go
-    lift1.configForwardSoftLimitThreshold(8300, kTimeoutMs);
+    lift1.configForwardSoftLimitThreshold(-5900, kTimeoutMs);
     lift1.configReverseSoftLimitThreshold(10, kTimeoutMs);
     
     //sets up the  fpid for pid functions
     lift1.selectProfileSlot(0, 0);
     lift1.config_kF(0, 0, kTimeoutMs);
-		lift1.config_kP(0, 0.1, kTimeoutMs);
+		lift1.config_kP(0, 0, kTimeoutMs);
 		lift1.config_kI(0, 0, kTimeoutMs);
     lift1.config_kD(0, 0, kTimeoutMs);
     
     //CruiseVelocity is the no exceleration part of trapizoid / top Acceleration is getting to top
-    lift1.configMotionCruiseVelocity(1200, 10);
-    lift1.configMotionAcceleration(1500, 10);
+    lift1.configMotionCruiseVelocity(1000, 10);
+    lift1.configMotionAcceleration(1300, 10);
     
     //Nominal out put is lowest limit and peak is highest    lift1.configNominalOutputForward(0, 10);
     lift1.configNominalOutputReverse(0, kTimeoutMs);
@@ -187,6 +190,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    leftYstick = stick.getRawAxis(1);
+    double leftYstick = -1.0 * stick.getRawAxis(1);
+		if (Math.abs(leftYstick) < 0.10) { leftYstick = 0;}
+    if(stick.getRawButton(1)){
+      TargetPosition = leftYstick* 4096 * 10.0;
+      lift1.set(ControlMode.MotionMagic, TargetPosition);
+    }
+    /*
     if( Math.abs(AxisY) > 0.01){
       RunManual(AxisY);
 
@@ -261,6 +272,7 @@ public class Robot extends TimedRobot {
      if(stick.getRawButton(10) == true) {
       setTargetPos(ElevatorStates.ResetElevator);
    }
+   */
   }
   /**
    * This function is called periodically during test mode.
