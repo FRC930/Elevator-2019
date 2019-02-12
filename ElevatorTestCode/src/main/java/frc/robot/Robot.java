@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     public static double AxisY;
     
     private static ElevatorStates stateEnum;
-
+    //creates variables for the FPID and Velocity and Acceleration
     private static double F = 1.4614;
     private static double P = 20.0;
     private static double I = 0.070;
@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     private static int pidSlotNumber = 0;
     @Override
    public void robotInit(){
-    
+    // puts our FPID Velocity and Acceleration to Shuffle board
     SmartDashboard.putNumber("F", F);
     SmartDashboard.putNumber("P", P);
     SmartDashboard.putNumber("I", I);
@@ -204,29 +204,42 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    //Manual drive to drive elevator using motion magic or not using motion magic
 
+    //Sets leftYstick to the Left stick Y axis value
     double leftYstick = stick.getRawAxis(1);
+    
+    //Cubing leftYstick to make it smoother
     leftYstick = Math.pow(leftYstick,3);
+
+    //Joystick deadband
 		if (Math.abs(leftYstick) < 0.005) { 
       leftYstick = 0;
     }
-
+    /*
+    If the  cubed value is above the  joystick deadband and button1(A) is pressed 
+    go to the middle pisiton or a diffrent spot based on how far joystick is pressed
+    */
     if(leftYstick > 0.005 && stick.getRawButton(1)){
       TargetPosition = (leftYstick * -2000) + 2500 ;
       lift1.set(ControlMode.MotionMagic, TargetPosition);
     }
+    //if button3(X) is pressed then go to the position 500 using motion magic
     else if(stick.getRawButton(3)){
       TargetPosition = 500;
       lift1.set(ControlMode.MotionMagic, TargetPosition);
     }
+    //if button2(B) is pressed then go to the highest spot at 4500 using motion magic
     else if(stick.getRawButton(2)){
       TargetPosition = 4500;
       lift1.set(ControlMode.MotionMagic, TargetPosition);
     }
+    //If button4(Y) is pressed then go to the middle spot using motion magic
     else if(stick.getRawButton(4)){
       TargetPosition = 2500;
       lift1.set(ControlMode.MotionMagic, TargetPosition);
     }
+    //if none are true run in percent output
     else{
       lift1.set(ControlMode.PercentOutput, -leftYstick);
     }
@@ -240,6 +253,10 @@ public class Robot extends TimedRobot {
       Acceleration = (int)SmartDashboard.getNumber("Acceleration", Acceleration);
 
     }
+    */
+    /*
+    puts the numbers that change through out the code to shuffle board so the encoder positon 
+    our calculated error our joystick spot our target position and also the talons error 
     */
     SmartDashboard.putNumber("EncoderPosition", lift1.getSelectedSensorPosition());
     SmartDashboard.putNumber("CalcError", lift1.getSelectedSensorPosition() - TargetPosition);
