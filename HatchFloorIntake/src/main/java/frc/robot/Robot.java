@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-
 public class Robot extends TimedRobot {
 
   // ---------- Constants --------- \\
@@ -46,56 +45,77 @@ public class Robot extends TimedRobot {
   private static final double INTAKE_SPEED = 1.0;
   private static final double OUTTAKE_SPEED = -1.0;
 
+  // ------------ Objects ------------- \\
+  private static final Solenoid hatchFloorIntakePistonController = new Solenoid(HATCH_FLOOR_SOLENOID);
+  private static final VictorSPX hatchFloorIntakeVictorController = new VictorSPX(HATCH_FLOOR_VICTOR);
+  private static final Joystick codriver = new Joystick(1);
 
-  // --------- Objects --------- \\
-  private static final Solenoid hatchFloorIntakePistonController = new Solenoid (HATCH_FLOOR_SOLENOID);
-  private static final VictorSPX hatchFloorIntakeVictorController = new VictorSPX (HATCH_FLOOR_VICTOR);
-  private static final Joystick codriver = new Joystick (1);
-  
-  
   @Override
   public void robotPeriodic() {
   }
 
   @Override
   public void autonomousInit() {
-  
+
   }
 
   @Override
   public void autonomousPeriodic() {
-   
-    }
-  
+
+  }
 
   @Override
   public void teleopPeriodic() {
 
-    /* The '.set' method is what tells the Solenoid whether the piston should be 
-    set to true or false. When set to false, the piston is collapsed and not extended.
-    When set to true, the piston is extended, meaning the hatch intake "hand" is set
-    to a perpendicular position from the ground, which in theory should be in position 
-    to be picked up by the bird beak hatch holder on the elevator. 
-    
-    Inside the () of the '.set' function is a boolean value, which we have set to 
-    the boolean value that is recieved from the controller button, which is either 
-    pressed (true) or unpressed (false).
-    */
+    /*
+    The '.set' method is what tells the Solenoid whether the piston should be set
+    to true or false. When set to false, the piston is collapsed and not
+    extended. When set to true, the piston is extended, meaning the hatch intake
+    "hand" is set to a perpendicular position from the ground, which in theory
+    should be in position to be picked up by the bird beak hatch holder on the
+    elevator.
+      
+    Inside the () of the '.set' function is a boolean value, which we have set to
+    the boolean value that is recieved from the controller button, which is
+    either pressed (true) or unpressed (false).
+     */
 
     hatchFloorIntakePistonController.set(codriver.getRawButton(LEFT_BUMPER));
 
     /*
+    The if statement checks for a true or false value, and runs when the value is true.
+    We have set the boolean value to be the value of the Y Button, which is true when pressed,
+    and false when unpressed. When the button is pressed, the victor motor controller spins
+    the motors inward to take in the hatch panel. 
+
+    Percent.Output is the standard control mode for motors, which uses 
+    values for motor controlling from 0 to 1.
+
+    The INTAKE_SPEED constant is the speed at which the intake motor will run 
+    while the button is pressed. 
     */
 
     if (codriver.getRawButton(Y_BUTTON)) {
       hatchFloorIntakeVictorController.set(ControlMode.PercentOutput, INTAKE_SPEED);
     }
-    
+
+     /*
+    The if statement checks for a true or false value, and runs when the value is true.
+    We have set the boolean value to be the value of the X Button, which is true when pressed,
+    and false when unpressed. When the button is pressed, the victor motor controller spins
+    the motors inward to take in the hatch panel. 
+
+    Percent.Output is the standard control mode for motors, which uses 
+    values for motor controlling from 0 to 1.
+
+    The OUTTAKE_SPEED constant is the speed at which the outtake motor will run 
+    while the button is pressed. 
+    */
+
     if (codriver.getRawButton(X_BUTTON)) {
       hatchFloorIntakeVictorController.set(ControlMode.PercentOutput, OUTTAKE_SPEED);
     }
   }
-
 
   @Override
   public void testPeriodic() {
