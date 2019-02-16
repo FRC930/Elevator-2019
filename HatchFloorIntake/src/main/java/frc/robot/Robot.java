@@ -39,8 +39,6 @@ public class Robot extends TimedRobot {
   // ---------- Constants --------- \\
   private static final int HATCH_FLOOR_SOLENOID = 0;
   private static final int HATCH_FLOOR_VICTOR = 1;
-  private static final int Y_BUTTON = 3;
-  private static final int X_BUTTON = 4;
   private static final int LEFT_BUMPER = 5;
   private static final double INTAKE_SPEED = 1.0;
   private static final double OUTTAKE_SPEED = -1.0;
@@ -49,7 +47,8 @@ public class Robot extends TimedRobot {
   private static final Solenoid hatchFloorIntakePistonController = new Solenoid(HATCH_FLOOR_SOLENOID);
   private static final VictorSPX hatchFloorIntakeVictorController = new VictorSPX(HATCH_FLOOR_VICTOR);
   private static final Joystick codriver = new Joystick(1);
-
+  private static final Solenoid armPiston = new Solenoid(0); // Beak arm for intake
+  private static final Solenoid hatchPiston = new Solenoid(1); // piston that controls beak (open or closed)
   @Override
   public void robotPeriodic() {
   }
@@ -66,6 +65,41 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    // Checks to see if Left Bumper is pressedd by codriver
+    if(codriver.getRawButton(LEFT_BUMPER)){
+
+      // Checks to see if the elevator and beak intake is NOT at floor position
+      if(!Elevator.atPosition(Elevator.ElevatorStates.RocketLevelOneHatchAndPlayerStation)) {
+
+        // Moves the elevator to floor position to be ready to intake 
+        Elevator.setTargetPos(Elevator.ElevatorStates.RocketLevelOneHatchAndPlayerStation);
+
+      }
+
+      //Checks to see if beak arm is NOT down 
+      if(!armPiston.get()) {
+
+        // Brings hatch beak arm down to position
+        armPiston.set(true);
+
+      }
+
+      // Checks to see if beak is NOT closed
+      if(!hatchPiston.get()){
+
+        // Closes beak 
+        hatchPiston.set(true);
+      }
+       // If all are set for intake, wheels intake hatch intohand
+        hatchFloorIntakeVictorController.set(ControlMode.PercentOutput, INTAKE_SPEED);
+      // Brings floor intake hand to ground using piston
+        hatchFloorIntakePistonController.set(true);
+
+        if(Elevator.atPosition(Elevator.ElevatorStates.RocketLevelOneHatchAndPlayerStation) && armPiston.get() && hatchPiston.get() && ) {
+
+        }
+
+    }
 
     /*
     The '.set' method is what tells the Solenoid whether the piston should be set
@@ -100,16 +134,7 @@ public class Robot extends TimedRobot {
     }
 
      /*
-    The if statement checks for a true or false value, and runs when the value is true.
-    We have set the boolean value to be the value of the X Button, which is true when pressed,
-    and false when unpressed. When the button is pressed, the victor motor controller spins
-    the motors inward to take in the hatch panel. 
-
-    Percent.Output is the standard control mode for motors, which uses 
-    values for motor controlling from 0 to 1.
-
-    The OUTTAKE_SPEED constant is the speed at which the outtake motor will run 
-    while the button is pressed. 
+    Same as above, but opposite for outtake
     */
 
     if (codriver.getRawButton(X_BUTTON)) {
