@@ -361,13 +361,13 @@ public class Robot extends TimedRobot {
 
   //Making enums for elevator
   enum ElevatorStates {
-      RocketLevelOneCargo,
-      RocketLevelTwoCargo,
-      RocketLevelThreeCargo,
-      RocketLevelOneHatchAndPlayerStation,
-      RocketLevelTwoHatch,
-      RocketLevelThreeHatch,
-      ResetElevator
+      RocketLevelOneCargo = 0,
+      RocketLevelTwoCargo = 0,
+      RocketLevelThreeCargo = 0,
+      RocketLevelOneHatchAndPlayerStation = 0,
+      RocketLevelTwoHatch = 0,
+      RocketLevelThreeHatch = 0,
+      ResetElevator = 10
   }
 
   //setting target position
@@ -398,7 +398,7 @@ public class Robot extends TimedRobot {
       case ResetElevator:
         TargetPosition = ElevatorReset;
         break;
-      //lift1.set(ControlMode.MotionMagic, TargetPosition);
+      lift1.set(ControlMode.MotionMagic, TargetPosition);
     
     }
 

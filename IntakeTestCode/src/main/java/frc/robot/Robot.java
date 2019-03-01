@@ -5,6 +5,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Solenoid;
+
+import java.io.DataInput;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
@@ -13,6 +17,9 @@ public class Robot extends TimedRobot {
 
   private final static Solenoid hatchPiston = new Solenoid(0);
   private Joystick coDriverStick = new Joystick(1);
+  private static boolean pressed = false;
+  private static boolean beakPostiiton = false;
+  private static DigitalInput bumper = new DigitalInput(0);
 
   //-------- Methods --------\\
 
@@ -34,6 +41,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    pressed = bumper.get();
 
     //coDriverStick.getRawButton(6) will return a true or false value of the
     //co driver's right shoulder button. It is true when the shoulder button is down, and false if it is up.
@@ -44,7 +52,18 @@ public class Robot extends TimedRobot {
     //overall, the piston will be set to the button's state. if the buttton is down, it is true, which then
     //sets the piston to true, which will push out the piston. when the piston is true, we will grab the hatch
 
-    hatchPiston.set(coDriverStick.getRawButton(6));  
+    hatchPiston.set(coDriverStick.getRawButton(6));
+    if(pressed && beakPostiiton == false){
+
+      hatchPiston.set(!beakPostiiton);
+
+    }
+    else if (pressed && beakPostiiton){
+
+      hatchPiston.set(!beakPostiiton);
+
+    }
+
   }
 
   @Override
